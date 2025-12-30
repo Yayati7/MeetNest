@@ -1,0 +1,657 @@
+/* =========================
+   ROOT – VIDEO CALL PAGE
+========================= */
+.meetVideoContainer {
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+
+    background:
+      linear-gradient(
+        rgba(0,0,0,0.55),
+        rgba(0,0,0,0.85)
+      ),
+      url("../../public/bg-dark.jpg") center / cover no-repeat;
+
+    overflow: hidden;
+}
+
+/* =========================
+   VIDEO ELEMENT
+========================= */
+.meetUserVideo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 16px;
+    background: black;
+}
+
+
+
+/* =========================
+   VIDEO GRID (BASE)
+========================= */
+.conferenceView {
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    right: 24px;
+    bottom: 120px; /* space for bottom bar */
+
+    display: grid;
+    gap: 20px;
+
+    justify-content: center;
+    align-content: center;
+
+    z-index: 1;
+}
+
+/* =========================
+   GRID RULES
+========================= */
+
+/* 1 participant */
+.conferenceView[data-count="1"] {
+    grid-template-columns: minmax(640px, 70%);
+}
+
+/* 2 participants */
+.conferenceView[data-count="2"] {
+    grid-template-columns: repeat(2, minmax(420px, 1fr));
+}
+
+/* 3 participants */
+.conferenceView[data-count="3"] {
+    grid-template-columns: repeat(3, minmax(320px, 1fr));
+}
+
+/* =========================
+   4 PARTICIPANTS — ZOOM EXACT
+========================= */
+.conferenceView[data-count="4"] {
+    /* strict 2×2 grid */
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+
+    /* reduce usable height → prevents tall stretch */
+    height: calc(100% - 80px);
+
+    /* equal space top & bottom */
+    align-content: center;
+
+    /* reduce horizontal stretch */
+    max-width: 88%;
+    margin-inline: auto;
+}
+
+/* 5–6 participants */
+.conferenceView[data-count="5"],
+.conferenceView[data-count="6"] {
+    grid-template-columns: repeat(3, minmax(320px, 1fr));
+}
+
+/* 7–9 participants */
+.conferenceView[data-count="7"],
+.conferenceView[data-count="8"],
+.conferenceView[data-count="9"] {
+    grid-template-columns: repeat(3, minmax(280px, 1fr));
+}
+
+/* =========================
+   VIDEO TILE
+========================= */
+.videoTile {
+    position: relative;
+    width: 100%;
+    height: 100%;
+
+    background: black;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.videoTile video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* =========================
+   VIDEO LABEL
+========================= */
+.videoLabel {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+
+    color: white;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(6px);
+
+    border-radius: 14px;
+    pointer-events: none;
+}
+
+/* =========================
+   BOTTOM CONTROL BAR
+========================= */
+.buttonContainers {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    height: 72px;
+    min-width: 420px;
+
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 28px;
+    border-radius: 36px;
+
+    background: rgba(90, 90, 90, 0.35);
+    backdrop-filter: blur(22px);
+
+    z-index: 30;
+}
+
+.buttonContainers svg {
+    font-size: 2.1rem;
+}
+
+.buttonContainers button {
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.buttonContainers button:hover {
+    transform: translateY(-2px);
+    background: rgba(255,255,255,0.08);
+}
+
+/* =========================
+   CHAT PANEL — MODERN UI
+========================= */
+.chatRoom {
+    position: fixed;
+    top: 0;
+    right: 0;
+
+    height: 100vh;
+    width: 360px;
+    max-width: 100vw;
+
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(18px);
+
+    border-left: 1px solid rgba(0,0,0,0.08);
+
+    transform: translateX(100%);
+    opacity: 0;
+
+    transition:
+      transform 0.35s cubic-bezier(.4,0,.2,1),
+      opacity 0.25s ease;
+
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+}
+
+/* OPEN STATE */
+.chatOpen {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+/* CLOSED STATE */
+.chatClosed {
+    pointer-events: none;
+}
+
+/* =========================
+   CHAT CONTAINER
+========================= */
+.chatContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 20px;
+}
+
+/* HEADER */
+.chatContainer h1 {
+    color: black;
+    margin: 0 0 12px;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+/* =========================
+   CHAT MESSAGES
+========================= */
+.chattingDisplay {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.chattingDisplay p {
+    margin: 0;
+    color: #111;
+    line-height: 1.4;
+}
+
+/* =========================
+   INPUT AREA
+========================= */
+.chattingArea {
+    display: flex;
+    gap: 8px;
+    padding-top: 12px;
+}
+
+.chattingArea button {
+    min-width: 72px;
+}
+
+/* =========================
+   MOBILE — FULL SCREEN CHAT
+========================= */
+@media (max-width: 768px) {
+    .chatRoom {
+        width: 100vw;
+        border-radius: 0;
+    }
+}
+
+/* =========================
+   MESSAGE ROW
+========================= */
+.messageRow {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: -11px;  
+}
+
+/* alignment */
+.me {
+  align-self: flex-end;
+  text-align: right;
+}
+
+.other {
+  align-self: flex-start;
+}
+
+/* spacing logic */
+.newGroup {
+  margin-top: 10px;
+}
+
+.grouped {
+  margin-top: 2px;
+}
+
+/* =========================
+   USERNAME + AVATAR PILL
+========================= */
+/* =========================
+   USERNAME + AVATAR PILL (BIGGER)
+========================= */
+.senderPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  background: #e0e0e0;
+  color: #222;
+
+  padding: 8px 16px;      /* ⬅️ bigger pill */
+  border-radius: 999px;
+
+  font-size: 0.8rem;
+  font-weight: 600;
+
+  width: fit-content;
+  margin-bottom: 4px;
+}
+
+.me .senderPill {
+  background: #cfe3ff;
+}
+
+/* BIGGER AVATAR */
+.avatar {
+  width: 32px;            /* ⬅️ increased */
+  height: 32px;
+  border-radius: 50%;
+
+  background: #555;
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+
+/* =========================
+   MESSAGE BUBBLE
+========================= */
+/* =========================
+   MESSAGE BUBBLES
+========================= */
+.messageBubble {
+  padding: 10px 14px;
+  max-width: 70%;
+  font-size: 0.9rem;
+}
+
+/* COLORS */
+.other .messageBubble {
+  background: #dcdcdc;
+  color: #111;
+}
+
+.me .messageBubble {
+  background: #3b82f6;
+  color: white;
+}
+
+/* FIRST MESSAGE (WITH TAIL) */
+.firstMsg.other {
+  border-radius: 0 16px 16px 16px;
+}
+
+.firstMsg.me {
+  border-radius: 16px 0 16px 16px;
+}
+
+/* MIDDLE MESSAGES (RECTANGLE) */
+.middleMsg {
+  border-radius: 10px;
+}
+
+/* LAST MESSAGE */
+.lastMsg.other {
+  border-radius: 10px 16px 16px 16px;
+}
+
+.lastMsg.me {
+  border-radius: 16px 10px 16px 16px;
+}
+
+
+/* =========================
+   CHAT HEADER
+========================= */
+.chatHeader {
+  background: gray;
+  padding: 14px 18px;
+  border-bottom: 1px solid #444;
+  border-radius: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.chatHeader h1 {
+  margin: 0;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  
+}
+
+/* =========================
+   MESSAGE BUBBLES
+========================= */
+.messageBubble {
+  padding: 8px 12px;
+  margin-top: 0px;        /* ⬅️ very close to sender bar */
+  max-width: 72%;
+  font-size: 0.9rem;
+}
+
+
+/* OTHER USERS */
+.other .messageBubble {
+  background: #c0bebe;
+  color: #111;
+  border-radius: 6px;
+}
+
+/* YOU */
+.me .messageBubble {
+  background: #3b82f6;
+  color: white;
+  border-radius: 6px;
+}
+
+/* FORCE RIGHT ALIGNMENT FOR YOUR MESSAGES */
+.me {
+  align-items: flex-end;
+}
+
+.me .senderPill {
+  margin-left: auto;
+}
+
+.me .messageBubble {
+  margin-left: auto;
+}
+
+/* =========================
+   MESSAGE ROW
+========================= */
+.messageRow {
+  display: flex;
+  flex-direction: column;
+  width: 60%;
+}
+
+/* alignment */
+.me {
+  align-items: flex-end;
+}
+
+.other {
+  align-items: flex-start;
+}
+
+/* =========================
+   USER BAR (LEFT CONNECTED)
+========================= */
+.senderBar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  background: #e6e6e6;
+  color: #222;
+
+  padding: 10px 14px;
+  border-radius: 0 14px 14px 0;
+
+  width: calc(100% - 20px);
+  margin-left: 0;
+}
+
+.me .senderBar {
+  background: #cfe3ff;
+  border-radius: 14px 0 14px 14px;
+}
+
+/* avatar stuck to edge */
+.avatar {
+  width: 36px;
+  height: 36px;
+
+  background: #555;
+  color: white;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.senderName {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* =========================
+   SENDER BAR (FULL WIDTH RECTANGLE)
+========================= */
+.senderBar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  width: 100%;                /* ✅ force full width */
+  box-sizing: border-box;
+
+  padding: 8px 14px;
+  margin: 0;                  /* ✅ no gaps */
+
+  background: #e6e6e6;
+  color: #222;
+
+  border-radius: 0 25px 25px 0; /* left-joined rectangle */
+  margin-bottom: 0.25rem;
+}
+
+.other .senderBar {
+  align-self: stretch;
+}
+
+.me .senderBar {
+  background: #dbeafe;
+  border-radius: 25px 0 0px 25px;
+  align-self: stretch;
+}
+
+/* =========================
+   MEDIA STATUS ICONS
+========================= */
+
+.mediaStatus {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 8px;
+}
+
+.mediaStatus span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 18px;
+    height: 18px;
+
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.12);
+
+    transition: all 0.2s ease;
+}
+
+.mediaStatus span svg {
+    font-size: 14px;
+}
+
+/* ON STATE */
+.on {
+    color: #e5e7eb; /* soft white */
+}
+
+/* OFF STATE */
+.off {
+    color: #ef4444; /* red */
+}
+
+/* =========================
+   VIDEO NAME PILL
+========================= */
+
+.videoLabel {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+}
+
+/* MAIN PILL */
+.namePill {
+    display: inline-flex;
+    align-items: center;        /* ✅ vertical alignment FIX */
+    gap: 10px;
+
+    padding: 6px 10px;
+    height: 32px;               /* ✅ fixed height */
+
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(8px);
+
+    border-radius: 14px;
+    color: white;
+}
+
+/* USERNAME */
+.nameText {
+    font-size: 0.85rem;
+    font-weight: 500;
+    line-height: 1;             /* ✅ prevents text shifting */
+}
+
+/* ICON GROUP */
+.mediaIcons {
+    display: flex;
+    align-items: center;        /* ✅ vertical alignment FIX */
+    gap: 6px;
+}
+
+/* ICON WRAPPER */
+.mediaIcons span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 18px;
+    height: 18px;
+
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* ICON SIZE */
+.mediaIcons svg {
+    font-size: 13px;
+}
+
+/* STATES */
+.on {
+    color: #e5e7eb;
+}
+
+.off {
+    color: #ef4444;
+}
