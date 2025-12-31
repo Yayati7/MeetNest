@@ -59,21 +59,21 @@ export const AuthProvider = ({ children }) => {
     }
 
     const getHistoryOfUser = async () => {
-    try {
-        const token = localStorage.getItem("token");
+        try {
+            const token = localStorage.getItem("token");
 
-        let request = await client.get("/history", {
-            headers: {
-                Authorization: token
-            }
-        });
+            let request = await client.get("/history", {
+                headers: {
+                    Authorization: token
+                }
+            });
 
-        return request.data;
-    } catch (err) {
-        console.error("Error fetching history:", err);
-        return { meetings: [] };
-    }
-};
+            return request.data;
+        } catch (err) {
+            console.error("Error fetching history:", err);
+            return { meetings: [] };
+        }
+    };
 
 
 

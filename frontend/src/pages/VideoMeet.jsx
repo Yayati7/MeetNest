@@ -13,6 +13,8 @@ import StopScreenShareIcon from '@mui/icons-material/StopScreenShare'
 import ChatIcon from '@mui/icons-material/Chat'
 import server from '../utils/environment';
 import { AuthContext } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+
 
 
 
@@ -63,6 +65,8 @@ export default function VideoMeetComponent() {
     let [videos, setVideos] = useState([])
 
     const { addToUserHistory } = useContext(AuthContext);
+    const navigate = useNavigate();
+
 
 
     // TODO
@@ -263,29 +267,34 @@ export default function VideoMeetComponent() {
         })
     }
 
-    let gotMessageFromServer = (fromId, message) => {
-        var signal = JSON.parse(message)
+    let gotMessageFromServer = async (fromId, message) => {
+        if (!connections[fromId]) return;
 
-        if (fromId !== socketIdRef.current) {
-            if (signal.sdp) {
-                connections[fromId].setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(() => {
-                    if (signal.sdp.type === 'offer') {
-                        connections[fromId].createAnswer().then((description) => {
-                            connections[fromId].setLocalDescription(description).then(() => {
-                                socketRef.current.emit('signal', fromId, JSON.stringify({ 'sdp': connections[fromId].localDescription }))
-                            }).catch(e => console.log(e))
-                        }).catch(e => console.log(e))
-                    }
-                }).catch(e => console.log(e))
-            }
+        const signal = JSON.parse(message);
 
-            if (signal.ice) {
-                connections[fromId].addIceCandidate(new RTCIceCandidate(signal.ice)).catch(e => console.log(e))
+        if (signal.sdp) {
+            await connections[fromId].setRemoteDescription(
+                new RTCSessionDescription(signal.sdp)
+            );
+
+            if (signal.sdp.type === "offer") {
+                const answer = await connections[fromId].createAnswer();
+                await connections[fromId].setLocalDescription(answer);
+
+                socketRef.current.emit(
+                    "signal",
+                    fromId,
+                    JSON.stringify({ sdp: connections[fromId].localDescription })
+                );
             }
         }
-    }
 
-
+        if (signal.ice) {
+            await connections[fromId].addIceCandidate(
+                new RTCIceCandidate(signal.ice)
+            );
+        }
+    };
 
 
     let connectToSocketServer = () => {
@@ -330,7 +339,9 @@ export default function VideoMeetComponent() {
             socketRef.current.on('user-joined', (id, clients, usernames) => {
                 clients.forEach((socketListId) => {
 
-                    connections[socketListId] = new RTCPeerConnection(peerConfigConnections)
+                    if (connections[socketListId]) return;
+                        connections[socketListId] = new RTCPeerConnection(peerConfigConnections);
+
                     // Wait for their ice candidate       
                     connections[socketListId].onicecandidate = function (event) {
                         if (event.candidate != null) {
@@ -489,27 +500,55 @@ export default function VideoMeetComponent() {
         setScreen(!screen);
     }
 
-    let handleEndCall = () => {
-
-     // ✅ ADD THIS (save meeting to history)
-        try {
-            addToUserHistory(
-                window.location.pathname.split("/").pop()
-            );
-        } catch (e) {}
-
-        try {
-            let tracks = localVideoref.current.srcObject.getTracks()
-            tracks.forEach(track => track.stop())
-        } catch (e) { }
+    let handleEndCall = async () => {
 
         const token = localStorage.getItem("token");
+
+        // save meeting history
         if (token) {
-            window.location.href = "/home"
-        } else {
-            window.location.href = "/"
+            try {
+                await addToUserHistory(
+                    window.location.pathname.split("/").pop()
+                );
+            } catch (e) {
+                console.warn("History save failed:", e);
+            }
         }
-    }
+
+        // 🔥 STOP LOCAL MEDIA
+        try {
+            localVideoref.current?.srcObject
+                ?.getTracks()
+                ?.forEach(track => track.stop());
+        } catch (e) {}
+
+        // 🔥 CLOSE ALL PEER CONNECTIONS
+        Object.values(connections).forEach(conn => {
+            try {
+                conn.close();
+            } catch (e) {}
+        });
+        connections = {}; // 🔥 RESET GLOBAL
+
+        // 🔥 RESET VIDEO STATE
+        setVideos([]);
+        videoRef.current = [];
+
+        // 🔥 DISCONNECT SOCKET
+        try {
+            socketRef.current?.disconnect();
+            socketRef.current = null;
+        } catch (e) {}
+
+        // navigate
+        if (token) {
+            navigate("/home", { replace: true });
+        } else {
+            navigate("/", { replace: true });
+        }
+    };
+
+
 
 
     let openChat = () => {
@@ -556,9 +595,16 @@ export default function VideoMeetComponent() {
     let connect = () => {
         setMessages([]);
         setNewMessages(0);
+
+        // 🔥 RESET PREVIOUS SESSION COMPLETELY
+        setVideos([]);
+        videoRef.current = [];
+        connections = {};
+
         setAskForUsername(false);
         getMedia();
     };
+
 
 
     const totalParticipants = videos.length + 1; // you + others
