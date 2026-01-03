@@ -1262,3 +1262,232 @@ body {
     font-weight: 600;
     letter-spacing: 0.05em;
 }
+
+/* =========================================
+   RESPONSIVE ADDITIONS — SAFE OVERRIDES ONLY
+   (NO DESIGN STRUCTURE CHANGED)
+========================================= */
+
+/* ---------- TABLETS (≤ 1024px) ---------- */
+@media (max-width: 1024px) {
+
+  .landingPageContainer nav,
+  .authNav,
+  .homeNav,
+  .historyNav {
+    padding: 1rem 2rem;
+  }
+
+  .landingMainContainer {
+    padding: 4rem 2rem 0 2rem;
+    height: auto;
+  }
+
+  .landingMainContainer h1 {
+    font-size: 3rem;
+  }
+
+  .rightPanel > img {
+    width: 42vw;
+  }
+
+  .homeSidebar {
+    width: 240px;
+  }
+
+  .actionGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .joinCard {
+    padding: 2rem;
+  }
+}
+
+/* ---------- MOBILE (≤ 768px) ---------- */
+@media (max-width: 768px) {
+
+  /* NAV */
+  .navlist {
+    gap: 1rem;
+  }
+
+  .navlist p {
+    font-size: 0.9rem;
+  }
+
+  /* LANDING */
+  .landingMainContainer {
+    flex-direction: column;
+    text-align: center;
+    padding: 3rem 1.5rem 2rem;
+  }
+
+  .landingMainContainer h1 {
+    font-size: 2.4rem;
+  }
+
+  .landingMainContainer p {
+    font-size: 1rem;
+  }
+
+  .landingMainContainer > div:nth-child(2) img {
+    height: 38vh;
+    margin-top: 2.5rem;
+  }
+
+  /* HOME LAYOUT */
+  .homeLayout {
+    flex-direction: column;
+  }
+
+  .homeSidebar {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 1rem;
+  }
+
+  .homeSidebar p {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.95rem;
+  }
+
+  .homeMain {
+    padding: 1.5rem;
+  }
+
+  /* TIME CARD */
+  .timeCard {
+    padding: 2rem;
+  }
+
+  .timeCard h1 {
+    font-size: 2.6rem;
+  }
+
+  /* JOIN */
+  .joinBox {
+    flex-direction: column;
+  }
+
+  .joinBox button {
+    width: 100%;
+  }
+
+  /* HISTORY */
+  .historyContent {
+    padding: 2rem 1.2rem;
+  }
+}
+
+/* ---------- SMALL MOBILE (≤ 480px) ---------- */
+@media (max-width: 480px) {
+
+  .landingMainContainer h1 {
+    font-size: 2rem;
+  }
+
+  .timeCard h1 {
+    font-size: 2.2rem;
+  }
+
+  .joinCard {
+    padding: 1.6rem;
+  }
+}
+
+
+
+/* ===========================
+   MOBILE SIDEBAR NAVBAR
+=========================== */
+
+/* Hide hamburger on desktop */
+.hamburger {
+  display: none;
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+
+/* Desktop nav visible */
+.desktopNav {
+  display: flex;
+}
+
+/* Sidebar base */
+.mobileSidebar {
+  position: fixed;
+  top: 0;
+  right: -260px;
+  height: 100vh;
+  width: 260px;
+  background: #0f0f0f;
+  color: white;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 9999;
+}
+
+/* Open state */
+.mobileSidebar.open {
+  right: 0;
+}
+
+.mobileSidebar p {
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+/* Close button */
+.closeBtn {
+  font-size: 1.4rem;
+  align-self: flex-end;
+  cursor: pointer;
+}
+
+/* ===========================
+   MOBILE ONLY
+=========================== */
+@media (max-width: 768px) {
+
+  .desktopNav {
+    display: none;
+  }
+
+  .hamburger {
+    display: block;
+  }
+}
+
+/* =========================================
+   FORCE HIDE DESKTOP NAV ON MOBILE
+   (NUCLEAR OPTION — LIKE GET STARTED FIX)
+========================================= */
+@media (max-width: 768px) {
+
+  .landingPageContainer nav .desktopNav {
+    display: none !important;
+  }
+
+}
+
+/* =========================================
+   LANDING PAGE — GET STARTED ALIGNMENT
+   (SAFE, NO GLOBAL EFFECT)
+========================================= */
+@media (max-width: 768px) {
+
+  .landingPageContainer .landingMainContainer > div:first-child {
+    display: flex;
+    flex-direction: column;
+    align-items: center;   /* 👈 centers button properly */
+  }
+
+  .landingPageContainer .landingMainContainer a {
+    margin-top: 0rem;
+  }
+}

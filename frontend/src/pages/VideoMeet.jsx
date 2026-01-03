@@ -67,6 +67,8 @@ export default function VideoMeetComponent() {
     const { addToUserHistory } = useContext(AuthContext);
     const navigate = useNavigate();
 
+    const { userData } = useContext(AuthContext);
+
 
 
     // TODO

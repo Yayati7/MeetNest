@@ -655,3 +655,107 @@
 .off {
     color: #ef4444;
 }
+
+/* =========================================
+   RESPONSIVE ADDITIONS — VIDEO CALL
+   (NO GRID LOGIC CHANGED)
+========================================= */
+
+/* ---------- TABLETS (≤ 1024px) ---------- */
+@media (max-width: 1024px) {
+
+  .conferenceView {
+    gap: 16px;
+  }
+
+  .conferenceView[data-count="2"],
+  .conferenceView[data-count="3"] {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .buttonContainers {
+    min-width: 360px;
+  }
+}
+
+/* ---------- MOBILE (≤ 768px) ---------- */
+@media (max-width: 768px) {
+
+  /* VIDEO GRID */
+  .conferenceView {
+    top: 16px;
+    left: 16px;
+    right: 16px;
+    bottom: 100px;
+    gap: 12px;
+  }
+
+  .conferenceView[data-count="1"] {
+    grid-template-columns: 1fr;
+  }
+
+  .conferenceView[data-count="2"],
+  .conferenceView[data-count="3"],
+  .conferenceView[data-count="4"] {
+    grid-template-columns: repeat(2, 1fr);
+    height: auto;
+  }
+
+  /* VIDEO TILE */
+  .videoTile {
+    border-radius: 12px;
+  }
+
+  /* CONTROLS */
+  .buttonContainers {
+    height: 64px;
+    min-width: unset;
+    padding: 0 20px;
+    gap: 14px;
+  }
+
+  .buttonContainers svg {
+    font-size: 1.8rem;
+  }
+
+  /* CHAT */
+  .chatRoom {
+    width: 100vw;
+  }
+
+  .chatContainer {
+    padding: 16px;
+  }
+
+  /* MESSAGE WIDTH */
+  .messageRow {
+    width: 90%;
+  }
+}
+
+/* ---------- SMALL MOBILE (≤ 480px) ---------- */
+@media (max-width: 480px) {
+
+  .conferenceView {
+    gap: 10px;
+  }
+
+  .conferenceView[data-count="2"],
+  .conferenceView[data-count="3"],
+  .conferenceView[data-count="4"] {
+    grid-template-columns: 1fr;
+  }
+
+  .buttonContainers {
+    gap: 10px;
+  }
+
+  .chattingDisplay {
+    gap: 10px;
+  }
+
+  .messageBubble {
+    max-width: 85%;
+    font-size: 0.85rem;
+  }
+}
