@@ -22,7 +22,7 @@ jobs:
 
       - name: Restart backend
         run: |
-          pm2 restart meetnest-backend
+          pm2 restart meetnest-backend || pm2 start src/app.js --name meetnest-backend
           pm2 save
 
       - name: Install frontend deps
@@ -33,6 +33,7 @@ jobs:
       - name: Build frontend
         run: |
           cd /home/ubuntu/pj3/frontend
+          export NODE_OPTIONS=--max_old_space_size=512
           npm run build
 
       - name: Fix permissions
