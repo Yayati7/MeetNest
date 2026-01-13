@@ -19,11 +19,7 @@ jobs:
           pm2 restart meetnest-backend || pm2 start src/app.js --name meetnest-backend
           pm2 save
 
-      - name: Frontend install & build
-        run: |
-          cd frontend
-          npm install
-          npm run build
+      # ❌ FRONTEND BUILD STEP REMOVED (build is done locally and committed)
 
       - name: Deploy frontend to nginx
         run: |
