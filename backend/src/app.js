@@ -1,11 +1,11 @@
 import express from "express";
 import { createServer } from "node:http";
-
 import { Server } from "socket.io";
+import dotenv from "dotenv";
+dotenv.config(); 
 
 import mongoose from "mongoose";
 import connectToSocket from "./controllers/socketManager.js";
-
 
 import cors from "cors";
 import userRoutes from "./routes/users.routes.js";
@@ -22,15 +22,21 @@ app.use(express.urlencoded({ limit: "40kb", extended: true }));
 app.use("/api/v1/users", userRoutes);
 
 const start = async () => {
-  app.set("mongo_user");
+  try {
+    // 🔹 MongoDB connection using ENV variable (Docker / Render / Local)
+    const connectionDb = await mongoose.connect(process.env.MONGODB_URI);
 
-  const connectionDb = await mongoose.connect( "mongodb+srv://singhpsby_db_user:RDuCrx9PdDu0Fvs2@cluster1.slrwdrx.mongodb.net/");
+    console.log(
+      `MONGO Connected DB Host: ${connectionDb.connection.host}`
+    );
 
-  console.log(`MONGO Connected DB Host: ${connectionDb.connection.host}`);
-
-  server.listen(app.get("port"), () => {
-    console.log("LISTENIN ON PORT 8000");
-  });
+    server.listen(app.get("port"), () => {
+      console.log(`LISTENING ON PORT ${app.get("port")}`);
+    });
+  } catch (error) {
+    console.error("MongoDB connection failed ❌", error);
+    process.exit(1);
+  }
 };
 
 start();

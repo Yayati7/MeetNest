@@ -1,0 +1,33 @@
+name: Deploy MeetNest
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Backend install & restart
+        run: |
+          cd backend
+          npm install
+          pm2 restart meetnest-backend || pm2 start src/app.js --name meetnest-backend
+          pm2 save
+
+      - name: Frontend install & build
+        run: |
+          cd frontend
+          npm install
+          npm run build
+
+      - name: Deploy frontend to nginx
+        run: |
+          sudo rm -rf /var/www/meetnest/*
+          sudo cp -r frontend/build/* /var/www/meetnest/
+          sudo chown -R www-data:www-data /var/www/meetnest
+          sudo systemctl reload nginx
