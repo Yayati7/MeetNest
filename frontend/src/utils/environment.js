@@ -1,8 +1,7 @@
-let IS_PROD = true;
-const server = IS_PROD ?
+const server = process.env.NODE_ENV === "production" ?
     "https://meetnestbackend-3e0n.onrender.com" :
 
-    "http://localhost:8000"
+    "http://127.0.0.1:8001"
 
 
 export default server;

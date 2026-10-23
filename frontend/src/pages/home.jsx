@@ -1,40 +1,34 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import withAuth from '../utils/withAuth'
 import { useNavigate } from 'react-router-dom'
 import "../App.css";
 import { Button, TextField } from '@mui/material';
-import { AuthContext } from '../contexts/AuthContext';
 
 function HomeComponent() {
 
     let navigate = useNavigate();
     const [meetingCode, setMeetingCode] = useState("");
-    const [canScroll, setCanScroll] = useState(false);
+    const [now, setNow] = useState(() => new Date());
 
     const joinSectionRef = useRef(null);
 
-    const { addToUserHistory } = useContext(AuthContext);
-
-    let handleJoinVideoCall = async () => {
-        await addToUserHistory(meetingCode)
-        navigate(`/${meetingCode}`)
-    }
-
-    /* 🔒 LOCK SCROLL UNTIL JOIN CLICKED */
-    useEffect(() => {
-        document.body.style.overflow = canScroll ? "auto" : "hidden";
-        return () => document.body.style.overflow = "auto";
-    }, [canScroll]);
+    const handleJoinVideoCall = async (event) => {
+        event.preventDefault();
+        const code = meetingCode.trim();
+        if (!code) return;
+        navigate(`/${encodeURIComponent(code)}`);
+    };
 
     const handleJoinClick = () => {
-        setCanScroll(true);
-        setTimeout(() => {
-            joinSectionRef.current?.scrollIntoView({ behavior: "smooth" });
-        }, 100);
+        joinSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     };
 
     /* 🕒 TIME & DATE */
-    const now = new Date();
+    useEffect(() => {
+        const timer = window.setInterval(() => setNow(new Date()), 30_000);
+        return () => window.clearInterval(timer);
+    }, []);
+
     const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const date = now.toLocaleDateString([], {
         weekday: 'long',
@@ -48,7 +42,7 @@ function HomeComponent() {
 
             {/* TOP NAVBAR */}
             <header className="homeNav">
-                <div className="navHeader">
+                <div className="navHeader" onClick={() => navigate("/home")}>
                     <img
                         src="/meetnest-icon.png"
                         alt="MeetNest logo"
@@ -72,36 +66,42 @@ function HomeComponent() {
 
                 {/* SIDEBAR */}
                 <aside className="homeSidebar">
-                    <p className="active">Home</p>
-                    <p onClick={handleJoinClick}>Join Meeting</p>
-                    <p onClick={() => navigate("/history")}>History</p>
+                    <button type="button" className="active" aria-current="page" onClick={() => navigate("/home")}>Home</button>
+                    <button type="button" onClick={handleJoinClick}>Join Meeting</button>
+                    <button type="button" onClick={() => navigate("/history")}>History</button>
                 </aside>
 
                 {/* MAIN CONTENT */}
                 <main className="homeMain">
 
+                    <div className="homeWelcome">
+                        <span className="eyebrow">MAKE ROOM FOR A GOOD CONVERSATION</span>
+                        <h1>Your next great<br className="welcomeBreak" /> conversation starts here.</h1>
+                    </div>
+
                     {/* TIME / DATE CARD */}
                     <div className="timeCard">
+                        <span className="timeEyebrow">YOUR LOCAL TIME</span>
                         <h1>{time}</h1>
                         <p className="date">{date}</p>
                     </div>
 
                     {/* ACTION BOXES */}
                     <div className="actionGrid">
-                    <div className="actionCard join animate-in" onClick={handleJoinClick}>
+                    <button type="button" className="actionCard join animate-in" onClick={handleJoinClick}>
                         <div className="icon">📹</div>
                         <h3>Join Meeting</h3>
                         <p>Enter a code and join instantly</p>
-                    </div>
+                    </button>
 
-                    <div
+                    <button type="button"
                         className="actionCard history animate-in"
                         onClick={() => navigate("/history")}
                     >
                         <div className="icon">▶</div>
                         <h3>View History</h3>
                         <p>Check out your recent meetings</p>
-                    </div>
+                    </button>
                     </div>
                                         
 
@@ -119,20 +119,23 @@ function HomeComponent() {
                             </p>
                             
 
-                            <div className="joinBox">
+                            <form className="joinBox" onSubmit={handleJoinVideoCall}>
                                 <TextField
                                 onChange={e => setMeetingCode(e.target.value)}
+                                value={meetingCode}
                                 label="Meeting Code"
                                 variant="outlined"
                                 fullWidth
+                                required
+                                inputProps={{ "aria-label": "Meeting code" }}
                                 />
                                 <Button
-                                onClick={handleJoinVideoCall}
                                 variant="contained"
+                                type="submit"
                                 >
                                 Join
                                 </Button>
-                            </div>
+                            </form>
 
                             </div>
                             

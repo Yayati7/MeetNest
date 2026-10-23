@@ -1,761 +1,168 @@
-/* =========================
-   ROOT – VIDEO CALL PAGE
-========================= */
 .meetVideoContainer {
-    position: relative;
-    height: 100vh;
-    width: 100vw;
-
-    background:
-      linear-gradient(
-        rgba(0,0,0,0.55),
-        rgba(0,0,0,0.85)
-      ),
-      url("../../public/bg-dark.jpg") center / cover no-repeat;
-
-    overflow: hidden;
-}
-
-/* =========================
-   VIDEO ELEMENT
-========================= */
-.meetUserVideo {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 16px;
-    background: black;
-}
-
-
-
-/* =========================
-   VIDEO GRID (BASE)
-========================= */
-.conferenceView {
-    position: absolute;
-    top: 24px;
-    left: 24px;
-    right: 24px;
-    bottom: 120px; /* space for bottom bar */
-
-    display: grid;
-    gap: 20px;
-
-    justify-content: center;
-    align-content: center;
-
-    z-index: 1;
-}
-
-/* =========================
-   GRID RULES
-========================= */
-
-/* 1 participant */
-.conferenceView[data-count="1"] {
-    grid-template-columns: minmax(640px, 70%);
-}
-
-/* 2 participants */
-.conferenceView[data-count="2"] {
-    grid-template-columns: repeat(2, minmax(420px, 1fr));
-}
-
-/* 3 participants */
-.conferenceView[data-count="3"] {
-    grid-template-columns: repeat(3, minmax(320px, 1fr));
-}
-
-/* =========================
-   4 PARTICIPANTS — ZOOM EXACT
-========================= */
-.conferenceView[data-count="4"] {
-    /* strict 2×2 grid */
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-
-    /* reduce usable height → prevents tall stretch */
-    height: calc(100% - 80px);
-
-    /* equal space top & bottom */
-    align-content: center;
-
-    /* reduce horizontal stretch */
-    max-width: 88%;
-    margin-inline: auto;
-}
-
-/* 5–6 participants */
-.conferenceView[data-count="5"],
-.conferenceView[data-count="6"] {
-    grid-template-columns: repeat(3, minmax(320px, 1fr));
-}
-
-/* 7–9 participants */
-.conferenceView[data-count="7"],
-.conferenceView[data-count="8"],
-.conferenceView[data-count="9"] {
-    grid-template-columns: repeat(3, minmax(280px, 1fr));
-}
-
-/* =========================
-   VIDEO TILE
-========================= */
-.videoTile {
-    position: relative;
-    width: 100%;
-    height: 100%;
-
-    background: black;
-    border-radius: 16px;
-    overflow: hidden;
-}
-
-.videoTile video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* =========================
-   VIDEO LABEL
-========================= */
-.videoLabel {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-
-    padding: 6px 12px;
-    font-size: 0.85rem;
-    font-weight: 500;
-
-    color: white;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(6px);
-
-    border-radius: 14px;
-    pointer-events: none;
-}
-
-/* =========================
-   BOTTOM CONTROL BAR
-========================= */
-.buttonContainers {
-    position: absolute;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-
-    height: 72px;
-    min-width: 420px;
-
-    display: flex;
-    gap: 20px;
-    align-items: center;
-    justify-content: center;
-
-    padding: 0 28px;
-    border-radius: 36px;
-
-    background: rgba(90, 90, 90, 0.35);
-    backdrop-filter: blur(22px);
-
-    z-index: 30;
-}
-
-.buttonContainers svg {
-    font-size: 2.1rem;
-}
-
-.buttonContainers button {
-    transition: transform 0.2s ease, background 0.2s ease;
-}
-
-.buttonContainers button:hover {
-    transform: translateY(-2px);
-    background: rgba(255,255,255,0.08);
-}
-
-/* =========================
-   CHAT PANEL — MODERN UI
-========================= */
-.chatRoom {
-    position: fixed;
-    top: 0;
-    right: 0;
-
-    height: 100vh;
-    width: 360px;
-    max-width: 100vw;
-
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(18px);
-
-    border-left: 1px solid rgba(0,0,0,0.08);
-
-    transform: translateX(100%);
-    opacity: 0;
-
-    transition:
-      transform 0.35s cubic-bezier(.4,0,.2,1),
-      opacity 0.25s ease;
-
-    z-index: 50;
-    display: flex;
-    flex-direction: column;
-}
-
-/* OPEN STATE */
-.chatOpen {
-    transform: translateX(0);
-    opacity: 1;
-}
-
-/* CLOSED STATE */
-.chatClosed {
-    pointer-events: none;
-}
-
-/* =========================
-   CHAT CONTAINER
-========================= */
-.chatContainer {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    padding: 20px;
-}
-
-/* HEADER */
-.chatContainer h1 {
-    color: black;
-    margin: 0 0 12px;
-    font-size: 1.2rem;
-    font-weight: 600;
-}
-
-/* =========================
-   CHAT MESSAGES
-========================= */
-.chattingDisplay {
-    flex: 1;
-    overflow-y: auto;
-    padding: 12px 6px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
-.chattingDisplay p {
-    margin: 0;
-    color: #111;
-    line-height: 1.4;
-}
-
-/* =========================
-   INPUT AREA
-========================= */
-.chattingArea {
-    display: flex;
-    gap: 8px;
-    padding-top: 12px;
-}
-
-.chattingArea button {
-    min-width: 72px;
-}
-
-/* =========================
-   MOBILE — FULL SCREEN CHAT
-========================= */
-@media (max-width: 768px) {
-    .chatRoom {
-        width: 100vw;
-        border-radius: 0;
-    }
-}
-
-/* =========================
-   MESSAGE ROW
-========================= */
-.messageRow {
-  display: flex;
-  flex-direction: column;
+  position: relative;
   width: 100%;
-  margin-bottom: -11px;  
+  height: 100dvh;
+  min-height: 440px;
+  overflow: hidden;
+  color: #f6f5f1;
+  background: radial-gradient(ellipse at 50% -20%, #263650 0%, #151c29 47%, #10151e 100%);
 }
 
-/* alignment */
-.me {
-  align-self: flex-end;
-  text-align: right;
-}
-
-.other {
-  align-self: flex-start;
-}
-
-/* spacing logic */
-.newGroup {
-  margin-top: 10px;
-}
-
-.grouped {
-  margin-top: 2px;
-}
-
-/* =========================
-   USERNAME + AVATAR PILL
-========================= */
-/* =========================
-   USERNAME + AVATAR PILL (BIGGER)
-========================= */
-.senderPill {
-  display: inline-flex;
+.meetingHeader {
+  position: absolute;
+  z-index: 3;
+  inset: 0 0 auto;
+  display: flex;
   align-items: center;
-  gap: 10px;
-
-  background: #e0e0e0;
-  color: #222;
-
-  padding: 8px 16px;      /* ⬅️ bigger pill */
-  border-radius: 999px;
-
-  font-size: 0.8rem;
-  font-weight: 600;
-
-  width: fit-content;
-  margin-bottom: 4px;
+  justify-content: space-between;
+  min-height: 72px;
+  padding: 12px clamp(18px, 3vw, 42px);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  background: rgba(12,17,25,.4);
+  backdrop-filter: blur(18px);
 }
 
-.me .senderPill {
-  background: #cfe3ff;
+.meetingInfo { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.meetingMark { display: grid; width: 38px; height: 38px; place-items: center; color: #20160e; border-radius: 13px; background: #eab77c; font-size: 1.15rem; }
+.meetingHeaderTitle { margin: 0; font-size: .97rem; font-weight: 650; }
+.meetingHeaderMeta { margin: 4px 0 0; color: #aeb8c7; font-size: .76rem; }
+.meetingSecure { display: inline-flex; align-items: center; gap: 7px; color: #b6c2d0; font-size: .82rem; }
+.meetingSecure span { width: 7px; height: 7px; border-radius: 50%; background: #57d6a4; box-shadow: 0 0 12px rgba(87,214,164,.6); }
+
+.conferenceView {
+  position: absolute;
+  inset: 92px 26px 122px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-rows: minmax(0, 1fr);
+  gap: clamp(10px, 1.5vw, 18px);
+  align-content: center;
+  justify-content: center;
+  max-width: 1600px;
+  margin-inline: auto;
+  transition: gap .24s ease;
 }
-
-/* BIGGER AVATAR */
-.avatar {
-  width: 32px;            /* ⬅️ increased */
-  height: 32px;
-  border-radius: 50%;
-
-  background: #555;
-  color: white;
-
+.conferenceView[data-count="1"] {
   display: flex;
   align-items: center;
   justify-content: center;
-
-  font-size: 0.85rem;
-  font-weight: 600;
 }
-
-
-/* =========================
-   MESSAGE BUBBLE
-========================= */
-/* =========================
-   MESSAGE BUBBLES
-========================= */
-.messageBubble {
-  padding: 10px 14px;
-  max-width: 70%;
-  font-size: 0.9rem;
+.conferenceView[data-count="1"] .videoTile {
+  width: min(100%, 1120px, calc((100dvh - 238px) * 1.77778));
+  max-height: 100%;
+  aspect-ratio: 16 / 9;
+  flex: 0 1 auto;
 }
+.conferenceView[data-count="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.conferenceView[data-count="3"], .conferenceView[data-count="4"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.conferenceView[data-count="5"], .conferenceView[data-count="6"], .conferenceView[data-count="7"], .conferenceView[data-count="8"], .conferenceView[data-count="9"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
-/* COLORS */
-.other .messageBubble {
-  background: #dcdcdc;
-  color: #111;
+.videoTile {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  align-self: center;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.11);
+  border-radius: 19px;
+  background: radial-gradient(ellipse at 50% 38%, #323c4c 0%, #242c39 42%, #1a202b 100%);
+  box-shadow: 0 20px 50px rgba(0,0,0,.22);
+  animation: participant-arrive .28s cubic-bezier(.2,.7,.2,1) both;
+  transition: border-color .2s ease, box-shadow .2s ease, border-radius .2s ease;
 }
+.videoTile video { display: block; width: 100%; height: 100%; object-fit: cover; background: #1a202b; }
+.meetUserVideo { width: 100%; height: 100%; object-fit: cover; }
+.videoLabel { position: absolute; left: 12px; bottom: 12px; max-width: calc(100% - 24px); }
+.namePill { display: inline-flex; align-items: center; gap: 10px; max-width: 100%; padding: 8px 11px; color: #f7f7f6; border: 1px solid rgba(255,255,255,.1); border-radius: 12px; background: rgba(12,16,22,.7); backdrop-filter: blur(12px); }
+.nameText { overflow: hidden; font-size: .82rem; font-weight: 560; text-overflow: ellipsis; white-space: nowrap; }
+.mediaIcons { display: flex; align-items: center; gap: 5px; }
+.mediaIcons span { display: grid; width: 23px; height: 23px; place-items: center; border-radius: 7px; background: rgba(255,255,255,.1); }
+.mediaIcons svg { font-size: 14px; }
+.on { color: #e7ecf2; }
+.off { color: #ff7c7c; }
 
-.me .messageBubble {
-  background: #3b82f6;
-  color: white;
-}
-
-/* FIRST MESSAGE (WITH TAIL) */
-.firstMsg.other {
-  border-radius: 0 16px 16px 16px;
-}
-
-.firstMsg.me {
-  border-radius: 16px 0 16px 16px;
-}
-
-/* MIDDLE MESSAGES (RECTANGLE) */
-.middleMsg {
-  border-radius: 10px;
-}
-
-/* LAST MESSAGE */
-.lastMsg.other {
-  border-radius: 10px 16px 16px 16px;
-}
-
-.lastMsg.me {
-  border-radius: 16px 10px 16px 16px;
-}
-
-
-/* =========================
-   CHAT HEADER
-========================= */
-.chatHeader {
-  background: gray;
-  padding: 14px 18px;
-  border-bottom: 1px solid #444;
-  border-radius: 1rem;
-  margin-bottom: 0.5rem;
-}
-
-.chatHeader h1 {
-  margin: 0;
-  color: white;
-  font-size: 1.1rem;
-  font-weight: 600;
-  
-}
-
-/* =========================
-   MESSAGE BUBBLES
-========================= */
-.messageBubble {
-  padding: 8px 12px;
-  margin-top: 0px;        /* ⬅️ very close to sender bar */
-  max-width: 72%;
-  font-size: 0.9rem;
-}
-
-
-/* OTHER USERS */
-.other .messageBubble {
-  background: #c0bebe;
-  color: #111;
-  border-radius: 6px;
-}
-
-/* YOU */
-.me .messageBubble {
-  background: #3b82f6;
-  color: white;
-  border-radius: 6px;
-}
-
-/* FORCE RIGHT ALIGNMENT FOR YOUR MESSAGES */
-.me {
-  align-items: flex-end;
-}
-
-.me .senderPill {
-  margin-left: auto;
-}
-
-.me .messageBubble {
-  margin-left: auto;
-}
-
-/* =========================
-   MESSAGE ROW
-========================= */
-.messageRow {
-  display: flex;
-  flex-direction: column;
-  width: 60%;
-}
-
-/* alignment */
-.me {
-  align-items: flex-end;
-}
-
-.other {
-  align-items: flex-start;
-}
-
-/* =========================
-   USER BAR (LEFT CONNECTED)
-========================= */
-.senderBar {
+.buttonContainers {
+  position: absolute;
+  z-index: 4;
+  bottom: 23px;
+  left: 50%;
   display: flex;
   align-items: center;
-  gap: 10px;
-
-  background: #e6e6e6;
-  color: #222;
-
-  padding: 10px 14px;
-  border-radius: 0 14px 14px 0;
-
-  width: calc(100% - 20px);
-  margin-left: 0;
+  gap: 9px;
+  padding: 9px 12px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 20px;
+  background: rgba(27,34,45,.83);
+  box-shadow: 0 15px 45px rgba(0,0,0,.3);
+  backdrop-filter: blur(20px);
+  transform: translateX(-50%);
 }
+.buttonContainers button { width: 48px; height: 48px; color: #f4f5f7 !important; border-radius: 15px; transition: background .16s ease, transform .16s ease; }
+.buttonContainers button:hover { background: rgba(255,255,255,.12); transform: translateY(-2px); }
+.buttonContainers button svg { font-size: 21px; }
+.buttonContainers button:nth-child(2) { width: 54px; color: #fff !important; border-radius: 16px; background: #dc5360; }
+.buttonContainers button:nth-child(2):hover { background: #e84151; }
 
-.me .senderBar {
-  background: #cfe3ff;
-  border-radius: 14px 0 14px 14px;
-}
-
-/* avatar stuck to edge */
-.avatar {
-  width: 36px;
-  height: 36px;
-
-  background: #555;
-  color: white;
-
-  border-radius: 50%;
-
+.chatRoom {
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  right: 0;
   display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-weight: 600;
-  font-size: 0.9rem;
+  width: min(390px, 100vw);
+  height: 100%;
+  color: #f5f6f8;
+  border-left: 1px solid rgba(255,255,255,.1);
+  background: rgba(19,25,34,.97);
+  box-shadow: -18px 0 60px rgba(0,0,0,.28);
+  backdrop-filter: blur(22px);
+  transition: transform .22s ease, opacity .22s ease;
 }
+.chatOpen { transform: translateX(0); opacity: 1; }
+.chatClosed { pointer-events: none; transform: translateX(102%); opacity: 0; }
+.chatContainer { display: flex; flex-direction: column; width: 100%; min-height: 0; padding: 18px; }
+.chatHeader { display: flex; align-items: center; min-height: 54px; padding: 0 5px 12px; border-bottom: 1px solid rgba(255,255,255,.1); }
+.chatHeader h1 { margin: 0; font-size: 1.05rem; font-weight: 620; }
+.chattingDisplay { display: flex; flex: 1; flex-direction: column; gap: 12px; min-height: 0; overflow-y: auto; padding: 16px 0; }
+.messageRow { display: flex; flex-direction: column; gap: 4px; max-width: 90%; }
+.me { align-self: flex-end; align-items: flex-end; }
+.other { align-self: flex-start; align-items: flex-start; }
+.senderBar { display: flex; align-items: center; gap: 8px; padding: 3px 5px; color: #b7c0cf; font-size: .76rem; }
+.senderName { font-weight: 550; }
+.avatar { display: grid; width: 25px; height: 25px; place-items: center; color: #181e28; border-radius: 50%; background: #d9b68e; font-size: .7rem; font-weight: 700; }
+.messageBubble { padding: 10px 12px; color: #eef0f4; border: 1px solid rgba(255,255,255,.07); border-radius: 13px; background: #293342; font-size: .86rem; line-height: 1.45; overflow-wrap: anywhere; }
+.me .messageBubble { border-color: rgba(239,185,124,.14); background: #66513c; }
+.firstMsg, .middleMsg, .lastMsg { border-radius: 13px; }
+.chattingArea { display: flex; align-items: center; gap: 8px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.1); }
+.chattingArea button { min-width: 70px; min-height: 45px; border-radius: 12px; background: #d9aa77; color: #1c1b1a; font-weight: 650; }
+.chatContainer input { color: #f5f6f8; }
 
-.senderName {
-  font-weight: 600;
-  font-size: 0.9rem;
+@media (max-width: 760px) {
+  .meetingHeader { min-height: 64px; padding-inline: 16px; }
+  .meetingSecure { font-size: .72rem; }
+  .conferenceView { inset: 78px 12px 98px; gap: 9px; }
+  .conferenceView[data-count="1"] .videoTile { width: min(100%, 900px, calc((100dvh - 200px) * 1.77778)); }
+  .conferenceView[data-count="2"], .conferenceView[data-count="3"], .conferenceView[data-count="4"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .conferenceView[data-count="5"], .conferenceView[data-count="6"], .conferenceView[data-count="7"], .conferenceView[data-count="8"], .conferenceView[data-count="9"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .videoTile { border-radius: 14px; }
+  .buttonContainers { bottom: 12px; gap: 3px; padding: 7px; border-radius: 17px; }
+  .buttonContainers button { width: 43px; height: 43px; }
+  .buttonContainers button:nth-child(2) { width: 47px; }
 }
-
-/* =========================
-   SENDER BAR (FULL WIDTH RECTANGLE)
-========================= */
-.senderBar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  width: 100%;                /* ✅ force full width */
-  box-sizing: border-box;
-
-  padding: 8px 14px;
-  margin: 0;                  /* ✅ no gaps */
-
-  background: #e6e6e6;
-  color: #222;
-
-  border-radius: 0 25px 25px 0; /* left-joined rectangle */
-  margin-bottom: 0.25rem;
-}
-
-.other .senderBar {
-  align-self: stretch;
-}
-
-.me .senderBar {
-  background: #dbeafe;
-  border-radius: 25px 0 0px 25px;
-  align-self: stretch;
-}
-
-/* =========================
-   MEDIA STATUS ICONS
-========================= */
-
-.mediaStatus {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-left: 8px;
-}
-
-.mediaStatus span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 18px;
-    height: 18px;
-
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.12);
-
-    transition: all 0.2s ease;
-}
-
-.mediaStatus span svg {
-    font-size: 14px;
-}
-
-/* ON STATE */
-.on {
-    color: #e5e7eb; /* soft white */
-}
-
-/* OFF STATE */
-.off {
-    color: #ef4444; /* red */
-}
-
-/* =========================
-   VIDEO NAME PILL
-========================= */
-
-.videoLabel {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-}
-
-/* MAIN PILL */
-.namePill {
-    display: inline-flex;
-    align-items: center;        /* ✅ vertical alignment FIX */
-    gap: 10px;
-
-    padding: 6px 10px;
-    height: 32px;               /* ✅ fixed height */
-
-    background: rgba(0, 0, 0, 0.65);
-    backdrop-filter: blur(8px);
-
-    border-radius: 14px;
-    color: white;
-}
-
-/* USERNAME */
-.nameText {
-    font-size: 0.85rem;
-    font-weight: 500;
-    line-height: 1;             /* ✅ prevents text shifting */
-}
-
-/* ICON GROUP */
-.mediaIcons {
-    display: flex;
-    align-items: center;        /* ✅ vertical alignment FIX */
-    gap: 6px;
-}
-
-/* ICON WRAPPER */
-.mediaIcons span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 18px;
-    height: 18px;
-
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.12);
-}
-
-/* ICON SIZE */
-.mediaIcons svg {
-    font-size: 13px;
-}
-
-/* STATES */
-.on {
-    color: #e5e7eb;
-}
-
-.off {
-    color: #ef4444;
-}
-
-/* =========================================
-   RESPONSIVE ADDITIONS — VIDEO CALL
-   (NO GRID LOGIC CHANGED)
-========================================= */
-
-/* ---------- TABLETS (≤ 1024px) ---------- */
-@media (max-width: 1024px) {
-
-  .conferenceView {
-    gap: 16px;
-  }
-
-  .conferenceView[data-count="2"],
-  .conferenceView[data-count="3"] {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .buttonContainers {
-    min-width: 360px;
-  }
-}
-
-/* ---------- MOBILE (≤ 768px) ---------- */
-@media (max-width: 768px) {
-
-  /* VIDEO GRID */
-  .conferenceView {
-    top: 16px;
-    left: 16px;
-    right: 16px;
-    bottom: 100px;
-    gap: 12px;
-  }
-
-  .conferenceView[data-count="1"] {
-    grid-template-columns: 1fr;
-  }
-
-  .conferenceView[data-count="2"],
-  .conferenceView[data-count="3"],
-  .conferenceView[data-count="4"] {
-    grid-template-columns: repeat(2, 1fr);
-    height: auto;
-  }
-
-  /* VIDEO TILE */
-  .videoTile {
-    border-radius: 12px;
-  }
-
-  /* CONTROLS */
-  .buttonContainers {
-    height: 64px;
-    min-width: unset;
-    padding: 0 20px;
-    gap: 14px;
-  }
-
-  .buttonContainers svg {
-    font-size: 1.8rem;
-  }
-
-  /* CHAT */
-  .chatRoom {
-    width: 100vw;
-  }
-
-  .chatContainer {
-    padding: 16px;
-  }
-
-  /* MESSAGE WIDTH */
-  .messageRow {
-    width: 90%;
-  }
-}
-
-/* ---------- SMALL MOBILE (≤ 480px) ---------- */
 @media (max-width: 480px) {
-
-  .conferenceView {
-    gap: 10px;
-  }
-
-  .conferenceView[data-count="2"],
-  .conferenceView[data-count="3"],
-  .conferenceView[data-count="4"] {
-    grid-template-columns: 1fr;
-  }
-
-  .buttonContainers {
-    gap: 10px;
-  }
-
-  .chattingDisplay {
-    gap: 10px;
-  }
-
-  .messageBubble {
-    max-width: 85%;
-    font-size: 0.85rem;
-  }
+  .meetingHeaderMeta { font-size: .68rem; }
+  .meetingSecure { display: none; }
+  .conferenceView[data-count="2"], .conferenceView[data-count="3"], .conferenceView[data-count="4"], .conferenceView[data-count="5"], .conferenceView[data-count="6"], .conferenceView[data-count="7"], .conferenceView[data-count="8"], .conferenceView[data-count="9"] { grid-template-columns: minmax(0, 1fr); }
+  .conferenceView[data-count="1"] { bottom: 88px; }
+  .conferenceView[data-count="1"] .videoTile { width: min(100%, calc((100dvh - 185px) * 1.77778)); }
+  .chatContainer { padding: 13px; }
+}
+@keyframes participant-arrive {
+  from { opacity: 0; transform: translateY(8px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chatRoom, .buttonContainers button, .conferenceView, .videoTile { transition: none; animation: none; }
 }

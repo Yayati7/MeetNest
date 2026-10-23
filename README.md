@@ -25,7 +25,7 @@ MeetNest is a full-stack real-time video conferencing web application that allow
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (v14.x or higher)
+- [Node.js](https://nodejs.org/) (v22 or higher)
 - [npm](https://www.npmjs.com/)
 - [MongoDB](https://www.mongodb.com/) (local or [MongoDB Atlas](https://www.mongodb.com/cloud/atlas))
 - Modern web browser with WebRTC support
@@ -38,6 +38,31 @@ MeetNest is a full-stack real-time video conferencing web application that allow
 - Allow camera and microphone permissions.
 - Participate in real-time video calls with chat and screen sharing.
 - End the call and view past meetings in the meeting history section.
+
+## Run locally
+
+1. Start MongoDB locally, or start the included MongoDB service with Docker Compose.
+2. In the project root, set `MONGODB_URI` in `.env` to your MongoDB connection string. For a local MongoDB instance, use `mongodb://127.0.0.1:27017/meetnest`.
+3. In one terminal, run the backend:
+
+   ```powershell
+   cd backend
+   $env:PORT='8001'
+   node --env-file=../.env src/app.js
+   ```
+
+4. In a second terminal, run the frontend:
+
+   ```powershell
+   cd frontend
+   npm start
+   ```
+
+5. Open `http://localhost:3000`.
+
+### Google sign-in
+
+Create a Google OAuth 2.0 web client and add `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` to the root `.env`. Register `http://localhost:8001/api/v1/users/google/callback` as an authorized redirect URI. The application uses `http://localhost:3000` as its local frontend URL by default. Keep OAuth secrets in `.env`; do not commit them.
 
 ## Acknowledgements
 

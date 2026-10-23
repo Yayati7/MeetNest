@@ -1,6 +1,6 @@
 import axios from "axios";
 import httpStatus from "http-status";
-import { createContext, useContext, useState } from "react";
+import { createContext, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import server from "../utils/environment";
 
@@ -13,16 +13,9 @@ const client = axios.create({
 
 
 export const AuthProvider = ({ children }) => {
-
-    const authContext = useContext(AuthContext);
-
-
-    const [userData, setUserData] = useState(authContext);
-
-
     const router = useNavigate();
 
-    const handleRegister = async (name, username, password) => {
+    const handleRegister = useCallback(async (name, username, password) => {
         try {
             let request = await client.post("/register", {
                 name: name,
@@ -37,17 +30,14 @@ export const AuthProvider = ({ children }) => {
         } catch (err) {
             throw err;
         }
-    }
+    }, []);
 
-    const handleLogin = async (username, password) => {
+    const handleLogin = useCallback(async (username, password) => {
         try {
             let request = await client.post("/login", {
                 username: username,
                 password: password
             });
-
-            console.log(username, password)
-            console.log(request.data)
 
             if (request.status === httpStatus.OK) {
                 localStorage.setItem("token", request.data.token);
@@ -56,9 +46,14 @@ export const AuthProvider = ({ children }) => {
         } catch (err) {
             throw err;
         }
-    }
+    }, [router]);
 
-    const getHistoryOfUser = async () => {
+    const handleGoogleLogin = useCallback((token) => {
+        localStorage.setItem("token", token);
+        router("/home", { replace: true });
+    }, [router]);
+
+    const getHistoryOfUser = useCallback(async () => {
         try {
             const token = localStorage.getItem("token");
 
@@ -73,11 +68,11 @@ export const AuthProvider = ({ children }) => {
             console.error("Error fetching history:", err);
             return { meetings: [] };
         }
-    };
+    }, []);
 
 
 
-    const addToUserHistory = async (meetingCode) => {
+    const addToUserHistory = useCallback(async (meetingCode) => {
         try {
             let request = await client.post("/add_to_activity", {
                 token: localStorage.getItem("token"),
@@ -87,12 +82,12 @@ export const AuthProvider = ({ children }) => {
         } catch (e) {
             throw e;
         }
-    }
+    }, []);
 
 
-    const data = {
-        userData, setUserData, addToUserHistory, getHistoryOfUser, handleRegister, handleLogin
-    }
+    const data = useMemo(() => ({
+        addToUserHistory, getHistoryOfUser, handleRegister, handleLogin, handleGoogleLogin
+    }), [addToUserHistory, getHistoryOfUser, handleRegister, handleLogin, handleGoogleLogin]);
 
     return (
         <AuthContext.Provider value={data}>
